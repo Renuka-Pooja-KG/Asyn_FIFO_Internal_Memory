@@ -55,22 +55,29 @@ class async_fifo_scoreboard extends uvm_scoreboard;
     forever begin
       write_fifo.get(tr);
       
-      if (tr.write_enable && !tr.wfull) begin
-        // Store expected data
-        expected_data_queue.push_back(tr.wdata);
-        write_count++;
-        
-        // Update expected FIFO state
-        if (expected_wr_level < 32) begin
-          expected_wr_level++;
-          expected_rd_level--;
+      // Simultaneous write and read: do not update levels or queue
+      if (tr.write_enable && tr.read_enable && !tr.wfull && !tr.rdempty) begin
+        `uvm_info(get_type_name(), "Simultaneous write and read: levels unchanged", UVM_MEDIUM)
+        // No change to expected_wr_level or expected_rd_level
+        // No update to expected_data_queue
+      end else begin
+        if (tr.write_enable && !tr.wfull) begin
+          // Store expected data
+          expected_data_queue.push_back(tr.wdata);
+          write_count++;
+          
+          // Update expected FIFO state
+          if (expected_wr_level < 32) begin
+            expected_wr_level++;
+            expected_rd_level--;
+          end
+          
+          expected_wfull = (expected_wr_level == 32);
+          expected_rdempty = (expected_wr_level == 0);
+          
+          `uvm_info(get_type_name(), $sformatf("Write: data=0x%h, wr_level=%d, wfull=%b", 
+                    tr.wdata, expected_wr_level, expected_wfull), UVM_HIGH)
         end
-        
-        expected_wfull = (expected_wr_level == 32);
-        expected_rdempty = (expected_wr_level == 0);
-        
-        `uvm_info(get_type_name(), $sformatf("Write: data=0x%h, wr_level=%d, wfull=%b", 
-                  tr.wdata, expected_wr_level, expected_wfull), UVM_HIGH)
       end
       
       // Check for overflow
@@ -95,31 +102,38 @@ class async_fifo_scoreboard extends uvm_scoreboard;
     forever begin
       read_fifo.get(tr);
       
-      if (tr.read_enable && !tr.rdempty) begin
-        // Check data integrity
-        if (expected_data_queue.size() > 0) begin
-          expected_data = expected_data_queue.pop_front();
-          read_count++;
-          
-          if (tr.read_data !== expected_data) begin
-            `uvm_error(get_type_name(), $sformatf("Data integrity error: expected=0x%h, actual=0x%h", 
-                      expected_data, tr.read_data))
-            error_count++;
+      // Simultaneous write and read: do not update levels or queue
+      if (tr.write_enable && tr.read_enable && !tr.wfull && !tr.rdempty) begin
+        `uvm_info(get_type_name(), "Simultaneous write and read: levels unchanged (read)", UVM_MEDIUM)
+        // No change to expected_wr_level or expected_rd_level
+        // No update to expected_data_queue
+      end else begin
+        if (tr.read_enable && !tr.rdempty) begin
+          // Check data integrity
+          if (expected_data_queue.size() > 0) begin
+            expected_data = expected_data_queue.pop_front();
+            read_count++;
+            
+            if (tr.read_data !== expected_data) begin
+              `uvm_error(get_type_name(), $sformatf("Data integrity error: expected=0x%h, actual=0x%h", 
+                        expected_data, tr.read_data))
+              error_count++;
+            end else begin
+              `uvm_info(get_type_name(), $sformatf("Read: data=0x%h (correct)", tr.read_data), UVM_HIGH)
+            end
+            
+            // Update expected FIFO state
+            if (expected_wr_level > 0) begin
+              expected_wr_level--;
+              expected_rd_level++;
+            end
+            
+            expected_wfull = (expected_wr_level == 32);
+            expected_rdempty = (expected_wr_level == 0);
           end else begin
-            `uvm_info(get_type_name(), $sformatf("Read: data=0x%h (correct)", tr.read_data), UVM_HIGH)
+            `uvm_error(get_type_name(), "Read attempted but no data available")
+            error_count++;
           end
-          
-          // Update expected FIFO state
-          if (expected_wr_level > 0) begin
-            expected_wr_level--;
-            expected_rd_level++;
-          end
-          
-          expected_wfull = (expected_wr_level == 32);
-          expected_rdempty = (expected_wr_level == 0);
-        end else begin
-          `uvm_error(get_type_name(), "Read attempted but no data available")
-          error_count++;
         end
       end
       

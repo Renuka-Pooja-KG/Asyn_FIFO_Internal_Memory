@@ -84,7 +84,19 @@ class async_fifo_basic_seq extends async_fifo_base_seq;
       })
     end
     
-    `uvm_info(get_type_name(), "Basic FIFO functionality test completed", UVM_LOW)
-  endtask
-
-endclass 
+    // Test 5: Simultaneous write and read (corner case)
+    `uvm_info(get_type_name(), "Test 5: Simultaneous write and read (corner case)", UVM_MEDIUM)
+    repeat (10) begin
+      `uvm_do_with(req, {
+        req.write_enable == 1;
+        req.read_enable == 1;
+        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.afull_value == 5'd20;
+        req.aempty_value == 5'd10;
+        req.sw_rst == 0;
+        req.hw_rst == 1;
+        req.mem_rst == 0;
+      })
+    end
+    
+    `

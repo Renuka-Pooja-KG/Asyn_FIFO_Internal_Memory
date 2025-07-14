@@ -103,8 +103,16 @@ class async_fifo_coverage extends uvm_subscriber #(async_fifo_transaction);
       bins all_reset = {3'b111};
     }
     
+    // Simultaneous write and read coverage
+    both_enables_cp: coverpoint {write_enable, read_enable} {
+      bins both_high = {2'b11};
+      bins write_only = {2'b10};
+      bins read_only = {2'b01};
+      bins neither = {2'b00};
+    }
+    
     // Cross coverage
-    write_read_cross: cross write_enable_cp, read_enable_cp;
+    write_read_cross: cross write_enable_cp, read_enable_cp, both_enables_cp;
     state_error_cross: cross fifo_state_cp, error_cp;
     level_state_cross: cross wr_level_cp, fifo_state_cp;
     reset_state_cross: cross reset_cp, fifo_state_cp;
