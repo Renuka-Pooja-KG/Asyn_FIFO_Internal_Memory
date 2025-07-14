@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.sv": "systemverilog",
+        "*.svh": "systemverilog"
+    },
+    "systemverilog.includeIndexing": true,
+    "systemverilog.defines": [],
+    "systemverilog.linter": "verilator",
+    "systemverilog.formatting": "iStyle"
+} 
