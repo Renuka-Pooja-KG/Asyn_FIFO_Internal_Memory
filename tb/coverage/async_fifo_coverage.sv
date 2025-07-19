@@ -55,7 +55,7 @@ class async_fifo_coverage extends uvm_subscriber #(async_fifo_transaction);
       bins empty = {2'b01};
       bins full = {2'b10};
       bins normal = {2'b00};
-      bins invalid = {2'b11};
+      bins invalid = {2'b11}; //Can be made an illegal bin 
     }
     
     // Almost full/empty state coverage
@@ -63,7 +63,7 @@ class async_fifo_coverage extends uvm_subscriber #(async_fifo_transaction);
       bins almost_full = {2'b10};
       bins almost_empty = {2'b01};
       bins normal = {2'b00};
-      bins both = {2'b11};
+      bins both = {2'b11}; //Can be made an illegal bin 
     }
     
     // Error condition coverage
@@ -71,7 +71,7 @@ class async_fifo_coverage extends uvm_subscriber #(async_fifo_transaction);
       bins no_error = {2'b00};
       bins overflow_only = {2'b10};
       bins underflow_only = {2'b01};
-      bins both_errors = {2'b11};
+      bins both_errors = {2'b11}; //Can be made an illegal bin 
     }
     
     // FIFO level coverage
