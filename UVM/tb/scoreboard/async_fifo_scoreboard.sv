@@ -2,7 +2,7 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_scoreboard extends uvm_scoreboard;
+class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends uvm_scoreboard;
   `uvm_component_utils(async_fifo_scoreboard)
 
   uvm_analysis_export #(async_fifo_transaction) write_export;
@@ -12,14 +12,14 @@ class async_fifo_scoreboard extends uvm_scoreboard;
   uvm_tlm_analysis_fifo #(async_fifo_transaction) read_fifo;
   
   // Data integrity checking
-  logic [31:0] expected_data_queue[$];
+  logic [DATA_WIDTH-1:0] expected_data_queue[$];
   int write_count = 0;
   int read_count = 0;
   int error_count = 0;
   
   // FIFO state tracking
-  logic [5:0] expected_wr_level = 0;
-  logic [5:0] expected_rd_level = 32; // FIFO depth
+  logic [ADDRESS_WIDTH:0] expected_wr_level = 0;
+  logic [ADDRESS_WIDTH:0] expected_rd_level = (1 << ADDRESS_WIDTH); // FIFO depth
   logic expected_wfull = 0;
   logic expected_rdempty = 1;
 
@@ -65,27 +65,22 @@ class async_fifo_scoreboard extends uvm_scoreboard;
           // Store expected data
           expected_data_queue.push_back(tr.wdata);
           write_count++;
-          
           // Update expected FIFO state
-          if (expected_wr_level < 32) begin
+          if (expected_wr_level < (1 << ADDRESS_WIDTH)) begin
             expected_wr_level++;
             expected_rd_level--;
           end
-          
-          expected_wfull = (expected_wr_level == 32);
+          expected_wfull = (expected_wr_level == (1 << ADDRESS_WIDTH));
           expected_rdempty = (expected_wr_level == 0);
-          
           `uvm_info(get_type_name(), $sformatf("Write: data=0x%h, wr_level=%d, wfull=%b", 
                     tr.wdata, expected_wr_level, expected_wfull), UVM_HIGH)
         end
       end
-      
       // Check for overflow
       if (tr.overflow && !expected_wfull) begin
         `uvm_error(get_type_name(), "Unexpected overflow detected")
         error_count++;
       end
-      
       // Check FIFO state consistency
       if (tr.wfull != expected_wfull) begin
         `uvm_error(get_type_name(), $sformatf("FIFO full state mismatch: expected=%b, actual=%b", 
@@ -97,11 +92,10 @@ class async_fifo_scoreboard extends uvm_scoreboard;
 
   task check_read_transactions();
     async_fifo_transaction tr;
-    logic [31:0] expected_data;
+    logic [DATA_WIDTH-1:0] expected_data;
     
     forever begin
       read_fifo.get(tr);
-      
       // Simultaneous write and read: do not update levels or queue
       if (tr.write_enable && tr.read_enable && !tr.wfull && !tr.rdempty) begin
         `uvm_info(get_type_name(), "Simultaneous write and read: levels unchanged (read)", UVM_MEDIUM)
@@ -113,7 +107,6 @@ class async_fifo_scoreboard extends uvm_scoreboard;
           if (expected_data_queue.size() > 0) begin
             expected_data = expected_data_queue.pop_front();
             read_count++;
-            
             if (tr.read_data !== expected_data) begin
               `uvm_error(get_type_name(), $sformatf("Data integrity error: expected=0x%h, actual=0x%h", 
                         expected_data, tr.read_data))
@@ -121,14 +114,12 @@ class async_fifo_scoreboard extends uvm_scoreboard;
             end else begin
               `uvm_info(get_type_name(), $sformatf("Read: data=0x%h (correct)", tr.read_data), UVM_HIGH)
             end
-            
             // Update expected FIFO state
             if (expected_wr_level > 0) begin
               expected_wr_level--;
               expected_rd_level++;
             end
-            
-            expected_wfull = (expected_wr_level == 32);
+            expected_wfull = (expected_wr_level == (1 << ADDRESS_WIDTH));
             expected_rdempty = (expected_wr_level == 0);
           end else begin
             `uvm_error(get_type_name(), "Read attempted but no data available")
@@ -136,13 +127,11 @@ class async_fifo_scoreboard extends uvm_scoreboard;
           end
         end
       end
-      
       // Check for underflow
       if (tr.underflow && !expected_rdempty) begin
         `uvm_error(get_type_name(), "Unexpected underflow detected")
         error_count++;
       end
-      
       // Check FIFO state consistency
       if (tr.rdempty != expected_rdempty) begin
         `uvm_error(get_type_name(), $sformatf("FIFO empty state mismatch: expected=%b, actual=%b", 
@@ -156,15 +145,13 @@ class async_fifo_scoreboard extends uvm_scoreboard;
     // Monitor for invalid FIFO states
     forever begin
       @(posedge $time);
-      
       // Check for invalid state (both full and empty)
       if (expected_wfull && expected_rdempty) begin
         `uvm_error(get_type_name(), "Invalid FIFO state: both full and empty")
         error_count++;
       end
-      
       // Check level consistency
-      if (expected_wr_level + expected_rd_level != 32) begin
+      if (expected_wr_level + expected_rd_level != (1 << ADDRESS_WIDTH)) begin
         `uvm_error(get_type_name(), $sformatf("FIFO level inconsistency: wr_level=%d, rd_level=%d", 
                   expected_wr_level, expected_rd_level))
         error_count++;

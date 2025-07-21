@@ -2,7 +2,7 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_basic_seq extends async_fifo_base_seq;
+class async_fifo_basic_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends async_fifo_base_seq #(DATA_WIDTH, ADDRESS_WIDTH);
   `uvm_object_utils(async_fifo_basic_seq)
 
   function new(string name = "async_fifo_basic_seq");
@@ -19,11 +19,11 @@ class async_fifo_basic_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
-        req.afull_value == 5'd25;
-        req.aempty_value == 5'd5;
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(25);
+        req.aempty_value == 'unsigned'(5);
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -34,10 +34,10 @@ class async_fifo_basic_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 0;
         req.read_enable == 1;
-        req.afull_value == 5'd25;
-        req.aempty_value == 5'd5;
+        req.afull_value == 'unsigned'(25);
+        req.aempty_value == 'unsigned'(5);
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -48,11 +48,11 @@ class async_fifo_basic_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 1;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
-        req.afull_value == 5'd25;
-        req.aempty_value == 5'd5;
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(25);
+        req.aempty_value == 'unsigned'(5);
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -63,11 +63,11 @@ class async_fifo_basic_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
-        req.afull_value == 5'd15; // Trigger almost full
-        req.aempty_value == 5'd5;
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(15);
+        req.aempty_value == 'unsigned'(5);
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -76,10 +76,10 @@ class async_fifo_basic_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 0;
         req.read_enable == 1;
-        req.afull_value == 5'd25;
-        req.aempty_value == 5'd15; // Trigger almost empty
+        req.afull_value == 'unsigned'(25);
+        req.aempty_value == 'unsigned'(15);
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -90,13 +90,16 @@ class async_fifo_basic_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 1;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
     
-    `
+    `uvm_info(get_type_name(), "Basic FIFO functionality test completed", UVM_LOW)
+  endtask
+
+endclass 

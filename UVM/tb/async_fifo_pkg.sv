@@ -8,32 +8,33 @@ package async_fifo_pkg;
   class async_fifo_transaction extends uvm_sequence_item;
     `uvm_object_utils(async_fifo_transaction)
 
-    // Write side signals
-    rand logic [31:0] wdata;
+    parameter DATA_WIDTH = 32;
+    parameter ADDRESS_WIDTH = 5;
+    rand logic [DATA_WIDTH-1:0] wdata;
     rand logic write_enable;
-    rand logic [4:0] afull_value;
+    rand logic [ADDRESS_WIDTH-1:0] afull_value;
     
     // Read side signals
     rand logic read_enable;
-    rand logic [4:0] aempty_value;
+    rand logic [ADDRESS_WIDTH-1:0] aempty_value;
     
     // Control signals
     rand logic sw_rst;
-    rand logic hw_rst;
+    rand logic hw_rst_n;
     rand logic mem_rst;
     
     // Response signals
-    logic [31:0] read_data;
+    logic [DATA_WIDTH-1:0] read_data;
     logic wfull;
     logic rdempty;
     logic wr_almost_ful;
     logic rd_almost_empty;
     logic overflow;
     logic underflow;
-    logic [5:0] fifo_write_count;
-    logic [5:0] fifo_read_count;
-    logic [5:0] wr_level;
-    logic [5:0] rd_level;
+    logic [ADDRESS_WIDTH:0] fifo_write_count;
+    logic [ADDRESS_WIDTH:0] fifo_read_count;
+    logic [ADDRESS_WIDTH:0] wr_level;
+    logic [ADDRESS_WIDTH:0] rd_level;
 
     // Constraints
     constraint c_afull_value { afull_value inside {[1:30]}; }
@@ -63,7 +64,7 @@ package async_fifo_pkg;
       afull_value = rhs_.afull_value;
       aempty_value = rhs_.aempty_value;
       sw_rst = rhs_.sw_rst;
-      hw_rst = rhs_.hw_rst;
+      hw_rst_n = rhs_.hw_rst_n;
       mem_rst = rhs_.mem_rst;
       read_data = rhs_.read_data;
       wfull = rhs_.wfull;

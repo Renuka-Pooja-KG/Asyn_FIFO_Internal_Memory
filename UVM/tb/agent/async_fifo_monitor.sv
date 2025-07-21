@@ -2,10 +2,10 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_monitor extends uvm_monitor;
+class async_fifo_monitor #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends uvm_monitor;
   `uvm_component_utils(async_fifo_monitor)
 
-  virtual async_fifo_if.monitor_mp vif;
+  virtual async_fifo_if #(DATA_WIDTH, ADDRESS_WIDTH).monitor_mp vif;
   async_fifo_config cfg;
   uvm_analysis_port #(async_fifo_transaction) ap;
   
@@ -23,7 +23,7 @@ class async_fifo_monitor extends uvm_monitor;
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     
-    if (!uvm_config_db#(virtual async_fifo_if.monitor_mp)::get(this, "", "vif", vif))
+    if (!uvm_config_db#(virtual async_fifo_if #(DATA_WIDTH, ADDRESS_WIDTH).monitor_mp)::get(this, "", "vif", vif))
       `uvm_fatal("NOVIF", "Virtual interface not found")
       
     if (!uvm_config_db#(async_fifo_config)::get(this, "", "cfg", cfg))
@@ -42,7 +42,7 @@ class async_fifo_monitor extends uvm_monitor;
     forever begin
       @(posedge vif.wclk);
       
-      if (vif.hw_rst) begin
+      if (vif.hw_rst_n) begin
         if (vif.write_enable && !vif.wfull) begin
           // Capture write transaction
           tr = async_fifo_transaction::type_id::create("write_tr");
@@ -79,7 +79,7 @@ class async_fifo_monitor extends uvm_monitor;
     forever begin
       @(posedge vif.rclk);
       
-      if (vif.hw_rst) begin
+      if (vif.hw_rst_n) begin
         if (vif.read_enable && !vif.rdempty) begin
           // Capture read transaction
           tr = async_fifo_transaction::type_id::create("read_tr");
@@ -110,7 +110,7 @@ class async_fifo_monitor extends uvm_monitor;
 
   task monitor_reset_events();
     forever begin
-      @(negedge vif.hw_rst);
+      @(negedge vif.hw_rst_n);
       `uvm_info(get_type_name(), "Hardware reset detected", UVM_MEDIUM)
       
       // Clear queues on reset
@@ -118,7 +118,7 @@ class async_fifo_monitor extends uvm_monitor;
       write_count = 0;
       read_count = 0;
       
-      @(posedge vif.hw_rst);
+      @(posedge vif.hw_rst_n);
       `uvm_info(get_type_name(), "Hardware reset released", UVM_MEDIUM)
     end
   endtask

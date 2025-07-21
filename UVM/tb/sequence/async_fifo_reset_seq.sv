@@ -2,7 +2,7 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_reset_seq extends async_fifo_base_seq;
+class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends async_fifo_base_seq #(DATA_WIDTH, ADDRESS_WIDTH);
   `uvm_object_utils(async_fifo_reset_seq)
 
   function new(string name = "async_fifo_reset_seq");
@@ -19,11 +19,11 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -36,7 +36,7 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 0; // Hardware reset
+        req.hw_rst_n == 0;
         req.mem_rst == 0;
       })
     end
@@ -46,11 +46,11 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -61,11 +61,11 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -77,8 +77,8 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
         req.read_enable == 0;
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
-        req.sw_rst == 1; // Soft reset
-        req.hw_rst == 1;
+        req.sw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -88,11 +88,11 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -103,11 +103,11 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -120,8 +120,8 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
-        req.mem_rst == 1; // Memory reset
+        req.hw_rst_n == 1;
+        req.mem_rst == 1;
       })
     end
     
@@ -130,11 +130,11 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -145,11 +145,11 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[32'h0000_0001:32'hFFFF_FFFF]};
+        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 0;
-        req.hw_rst == 1;
+        req.hw_rst_n == 1;
         req.mem_rst == 0;
       })
     end
@@ -162,7 +162,7 @@ class async_fifo_reset_seq extends async_fifo_base_seq;
         req.afull_value == 5'd20;
         req.aempty_value == 5'd10;
         req.sw_rst == 1;
-        req.hw_rst == 0;
+        req.hw_rst_n == 0;
         req.mem_rst == 1;
       })
     end

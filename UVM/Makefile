@@ -3,10 +3,11 @@
 # Tool selection
 SIMULATOR ?= questa
 TEST ?= async_fifo_basic_test
+UVMHOME ?= CDNS-1.1d
 
 # RTL and UVM directories
 RTL_DIR = ../RTL
-UVM_DIR = .
+UVM_DIR = ./tb
 
 # Design files
 DESIGN_FILES = $(RTL_DIR)/async_fifo.sv \
@@ -93,6 +94,16 @@ run-xrun:
 	@echo "Running $(TEST) with Cadence Xcelium..."
 	xrun $(XRUN_FLAGS) $(DESIGN_FILES) $(TB_FILES)
 
+# Run with Cadence Xcelium using a file list and UVM home
+run-xrun-filelist:
+	@echo "Running with xrun using compile_list.f and UVM home $(UVMHOME)..."
+	xrun -access +rwc -f compile_list.f -uvmhome $(UVMHOME) +UVM_TESTNAME=$(TEST)
+
+# SimVision waveform viewing
+wave-simvision:
+	@echo "Launching SimVision for waveform viewing..."
+	simvision waves.shm &
+
 # Compile based on simulator
 compile: compile-$(SIMULATOR)
 
@@ -121,15 +132,19 @@ help:
 	@echo "  all           - Compile and run"
 	@echo "  clean         - Clean generated files"
 	@echo "  help          - Show this help"
+	@echo "  run-xrun-filelist - Run xrun with compile_list.f and UVM home"
+	@echo "  wave-simvision   - Launch SimVision for waveform viewing"
 	@echo ""
 	@echo "Variables:"
 	@echo "  SIMULATOR     - Simulation tool (questa, vcs, modelsim, xrun)"
 	@echo "  TEST          - Test to run (async_fifo_basic_test, async_fifo_stress_test, async_fifo_reset_test)"
 	@echo "  UVM_HOME      - Path to UVM library (for Questa/VCS/ModelSim)"
+	@echo "  UVMHOME       - UVM home for xrun (default: CDNS-1.1d)"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make SIMULATOR=xrun TEST=async_fifo_basic_test"
-	@echo "  make SIMULATOR=questa TEST=async_fifo_stress_test"
+	@echo "  make run-xrun-filelist TEST=async_fifo_basic_test UVMHOME=CDNS-1.1d"
+	@echo "  make wave-simvision"
 	@echo "  make clean"
 
 # Test targets
@@ -150,4 +165,4 @@ coverage-xrun:
 wave-xrun:
 	xrun -gui $(XRUN_FLAGS) $(DESIGN_FILES) $(TB_FILES)
 
-.PHONY: all compile run clean help test-basic test-stress test-reset coverage-xrun wave-xrun 
+.PHONY: all compile run clean help test-basic test-stress test-reset coverage-xrun wave-xrun run-xrun-filelist wave-simvision 

@@ -6,10 +6,10 @@ import async_fifo_pkg::*;
 module async_fifo_tb;
   
   // Clock and reset signals
-  logic wclk, rclk, hw_rst;
+  logic wclk, rclk, hw_rst_n;
   
-  // Interface instantiation
-  async_fifo_if fifo_if(wclk, rclk, hw_rst);
+  // Interface instantiation (parameterized)
+  async_fifo_if #(.DATA_WIDTH(32), .ADDRESS_WIDTH(5)) fifo_if(wclk, rclk, hw_rst_n);
   
   // DUT instantiation
   async_fifo_int_mem #(
@@ -39,7 +39,7 @@ module async_fifo_tb;
     .wdata(fifo_if.wdata),
     .write_enable(fifo_if.write_enable),
     .wclk(fifo_if.wclk),
-    .hw_rst(fifo_if.hw_rst),
+    .hw_rst_n(fifo_if.hw_rst_n),
     .read_enable(fifo_if.read_enable),
     .rclk(fifo_if.rclk),
     .afull_value(fifo_if.afull_value),
@@ -58,11 +58,11 @@ module async_fifo_tb;
     forever #7.5 rclk = ~rclk; // 66.67MHz
   end
 
-  // Reset generation
+  // Reset generation (active low)
   initial begin
-    hw_rst = 0;
+    hw_rst_n = 0;
     #100;
-    hw_rst = 1;
+    hw_rst_n = 1;
   end
 
   // UVM test execution

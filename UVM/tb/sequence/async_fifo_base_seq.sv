@@ -2,7 +2,7 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_base_seq extends uvm_sequence #(async_fifo_transaction);
+class async_fifo_base_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends uvm_sequence #(async_fifo_transaction);
   `uvm_object_utils(async_fifo_base_seq)
 
   async_fifo_config cfg;
