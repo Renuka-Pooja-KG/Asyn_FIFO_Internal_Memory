@@ -4,6 +4,21 @@ import uvm_pkg::*;
 `include "uvm_macros.svh"
 `include "async_fifo_config.sv"
 `include "async_fifo_transaction.sv"
+`include "async_fifo_if.sv"
+`include "async_fifo_env.sv"
+`include "async_fifo_agent.sv"
+`include "async_fifo_driver.sv"
+`include "async_fifo_monitor.sv"
+`include "async_fifo_scoreboard.sv"
+`include "async_fifo_sequencer.sv"
+`include "async_fifo_base_seq.sv"
+`include "async_fifo_basic_seq.sv"
+`include "async_fifo_stress_seq.sv"
+`include "async_fifo_reset_seq.sv"
+`include "async_fifo_base_test.sv"
+`include "async_fifo_basic_test.sv"
+`include "async_fifo_stress_test.sv"
+`include "async_fifo_reset_test.sv"
 
 module async_fifo_tb;
   

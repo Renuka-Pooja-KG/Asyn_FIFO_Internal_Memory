@@ -2,6 +2,9 @@
 
 `include "async_fifo_config.sv"
 `include "async_fifo_transaction.sv"
+`include "async_fifo_driver.sv"
+`include "async_fifo_monitor.sv"
+`include "async_fifo_sequencer.sv"
 
 class async_fifo_agent extends uvm_agent;
   `uvm_component_utils(async_fifo_agent)

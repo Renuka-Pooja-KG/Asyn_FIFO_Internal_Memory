@@ -2,6 +2,9 @@
 
 `include "async_fifo_config.sv"
 `include "async_fifo_transaction.sv"
+`include "async_fifo_agent.sv"
+`include "async_fifo_scoreboard.sv"
+`include "async_fifo_coverage.sv"
 
 class async_fifo_env extends uvm_env;
   `uvm_component_utils(async_fifo_env)
