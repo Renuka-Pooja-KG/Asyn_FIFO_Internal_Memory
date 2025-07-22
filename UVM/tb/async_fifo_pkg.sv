@@ -8,8 +8,8 @@ package async_fifo_pkg;
   class async_fifo_transaction extends uvm_sequence_item;
     `uvm_object_utils(async_fifo_transaction)
 
-    parameter DATA_WIDTH = 32;
-    parameter ADDRESS_WIDTH = 5;
+    localparam int DATA_WIDTH = 32;
+    localparam int ADDRESS_WIDTH = 5;
     rand logic [DATA_WIDTH-1:0] wdata;
     rand logic write_enable;
     rand logic [ADDRESS_WIDTH-1:0] afull_value;
@@ -115,4 +115,4 @@ package async_fifo_pkg;
 
   endclass
 
-endpackage 
+endpackage

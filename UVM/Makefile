@@ -42,9 +42,18 @@ help:
 	@echo "Available TEST values: async_fifo_basic_test, async_fifo_stress_test, async_fifo_reset_test, ..."
 	@echo "//-----------------------------------------------------------------------------------//"
 
+INCDIRS = +incdir+$(UVM_DIR) \
+          +incdir+$(UVM_DIR)/interface \
+          +incdir+$(UVM_DIR)/agent \
+          +incdir+$(UVM_DIR)/sequence \
+          +incdir+$(UVM_DIR)/coverage \
+          +incdir+$(UVM_DIR)/scoreboard \
+          +incdir+$(UVM_DIR)/test \
+          +incdir+$(RTL_DIR)
+
 run:
 	@echo "[makefile] Running test: $(TEST)"
-	xrun -access +rwc $(DESIGN_FILES) $(TB_FILES) -uvmhome $(UVMHOME) +UVM_TESTNAME=$(TEST)
+	xrun -access +rwc $(INCDIRS) $(DESIGN_FILES) $(TB_FILES) -uvmhome $(UVMHOME) +UVM_TESTNAME=$(TEST)
 
 all:
 	$(MAKE) run TEST=async_fifo_basic_test

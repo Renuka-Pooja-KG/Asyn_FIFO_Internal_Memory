@@ -1,5 +1,7 @@
 `timescale 1ns/1ps
 
+`include "../async_fifo_pkg.sv"
+
 import async_fifo_pkg::*;
 
 class async_fifo_driver extends uvm_driver #(async_fifo_transaction);
