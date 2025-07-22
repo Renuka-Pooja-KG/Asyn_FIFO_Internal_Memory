@@ -1,15 +1,8 @@
-# Makefile for Asynchronous FIFO UVM Verification (Cadence, Questa, VCS)
+# Makefile for Asynchronous FIFO UVM Verification (xrun + simvision only)
 
-# Tool selection
-SIMULATOR ?= questa
-TEST ?= async_fifo_basic_test
-UVMHOME ?= CDNS-1.1d
-
-# RTL and UVM directories
 RTL_DIR = ../RTL
 UVM_DIR = ./tb
 
-# Design files
 DESIGN_FILES = $(RTL_DIR)/async_fifo.sv \
                $(RTL_DIR)/fifo_mem.sv \
                $(RTL_DIR)/rptr_empty.sv \
@@ -17,7 +10,6 @@ DESIGN_FILES = $(RTL_DIR)/async_fifo.sv \
                $(RTL_DIR)/rd_ndff_synch.sv \
                $(RTL_DIR)/wr_ndff_synch.sv
 
-# UVM testbench files
 TB_FILES = $(UVM_DIR)/async_fifo_pkg.sv \
            $(UVM_DIR)/interface/async_fifo_if.sv \
            $(UVM_DIR)/agent/async_fifo_driver.sv \
@@ -37,132 +29,34 @@ TB_FILES = $(UVM_DIR)/async_fifo_pkg.sv \
            $(UVM_DIR)/test/async_fifo_reset_test.sv \
            $(UVM_DIR)/async_fifo_tb.sv
 
-# UVM library path (adjust based on your installation)
-UVM_HOME ?= /opt/questa/questa-2023.4/verilog_src/uvm-1.2
+UVMHOME ?= CDNS-1.1d
+TEST ?= async_fifo_basic_test
 
-# Compilation flags
-VLOG_FLAGS = -sv +incdir+$(UVM_HOME)/src $(UVM_HOME)/src/uvm_pkg.sv
-VSIM_FLAGS = -c -do "run -all; quit"
+help:
+	@echo "//------------------- Asynchronous FIFO UVM Verification Makefile -------------------//"
+	@echo "make run TEST=<test_name>     : Run the specified UVM test (default: async_fifo_basic_test)"
+	@echo "make all                     : Run all major UVM tests (basic, stress, reset)"
+	@echo "make waveform                : Open SimVision waveform viewer (waves.shm)"
+	@echo "make clean                   : Remove all generated files and logs"
+	@echo "make help                    : Show this help message"
+	@echo "Available TEST values: async_fifo_basic_test, async_fifo_stress_test, async_fifo_reset_test, ..."
+	@echo "//-----------------------------------------------------------------------------------//"
 
-# Cadence Xcelium (xrun) flags
-XRUN_FLAGS = -uvm -access +rwc -timescale 1ns/1ps -64bit -linedebug +UVM_TESTNAME=$(TEST) \
-             -incdir $(UVM_DIR) -incdir $(UVM_DIR)/interface -incdir $(UVM_DIR)/agent -incdir $(UVM_DIR)/sequence \
-             -incdir $(UVM_DIR)/coverage -incdir $(UVM_DIR)/scoreboard -incdir $(UVM_DIR)/test -incdir $(RTL_DIR)
+run:
+	@echo "[makefile] Running test: $(TEST)"
+	xrun -access +rwc $(DESIGN_FILES) $(TB_FILES) -uvmhome $(UVMHOME) +UVM_TESTNAME=$(TEST)
 
-# Default target
-all: compile run
+all:
+	$(MAKE) run TEST=async_fifo_basic_test
+	$(MAKE) run TEST=async_fifo_stress_test
+	$(MAKE) run TEST=async_fifo_reset_test
 
-# Compile with QuestaSim
-compile-questa:
-	@echo "Compiling with QuestaSim..."
-	vlib work
-	vlog $(VLOG_FLAGS) $(DESIGN_FILES) $(TB_FILES)
-
-# Compile with VCS
-compile-vcs:
-	@echo "Compiling with VCS..."
-	vcs -full64 -sverilog +incdir+$(UVM_HOME)/src $(UVM_HOME)/src/uvm_pkg.sv $(DESIGN_FILES) $(TB_FILES)
-
-# Compile with ModelSim
-compile-modelsim:
-	@echo "Compiling with ModelSim..."
-	vlib work
-	vlog -sv +incdir+$(UVM_HOME)/src $(UVM_HOME)/src/uvm_pkg.sv $(DESIGN_FILES) $(TB_FILES)
-
-# Compile with Cadence Xcelium
-compile-xrun:
-	@echo "Compiling with Cadence Xcelium..."
-	xrun -elaborate -64bit $(XRUN_FLAGS) $(DESIGN_FILES) $(TB_FILES)
-
-# Run with QuestaSim
-run-questa:
-	@echo "Running $(TEST) with QuestaSim..."
-	vsim -c async_fifo_tb +UVM_TESTNAME=$(TEST) -do "run -all; quit"
-
-# Run with VCS
-run-vcs:
-	@echo "Running $(TEST) with VCS..."
-	./simv +UVM_TESTNAME=$(TEST)
-
-# Run with ModelSim
-run-modelsim:
-	@echo "Running $(TEST) with ModelSim..."
-	vsim -c async_fifo_tb +UVM_TESTNAME=$(TEST) -do "run -all; quit"
-
-# Run with Cadence Xcelium
-run-xrun:
-	@echo "Running $(TEST) with Cadence Xcelium..."
-	xrun $(XRUN_FLAGS) $(DESIGN_FILES) $(TB_FILES)
-
-# Run with Cadence Xcelium using a file list and UVM home
-run-xrun-filelist:
-	@echo "Running with xrun using compile_list.f and UVM home $(UVMHOME)..."
-	xrun -access +rwc -f compile_list.f -uvmhome $(UVMHOME) +UVM_TESTNAME=$(TEST)
-
-# SimVision waveform viewing
-wave-simvision:
-	@echo "Launching SimVision for waveform viewing..."
+waveform:
+	@echo "[makefile] Launching SimVision for waveform viewing"
 	simvision waves.shm &
 
-# Compile based on simulator
-compile: compile-$(SIMULATOR)
-
-# Run based on simulator
-run: run-$(SIMULATOR)
-
-# Clean
 clean:
-	@echo "Cleaning..."
-	rm -rf work
-	rm -rf transcript
-	rm -rf vsim.wlf
-	rm -rf simv
-	rm -rf simv.daidir
-	rm -rf csrc
-	rm -rf *.vcd
-	rm -rf *.log
-	rm -rf *.wlf
-	rm -rf xcelium.d xcelium.h xrun.history xrun.log xrun.key INCA_libs
+	@echo "[makefile] Cleaning all generated files and logs"
+	rm -rf work xcelium.d xcelium.h xrun.history xrun.log xrun.key INCA_libs *.vcd *.log *.wlf waves.shm
 
-# Help
-help:
-	@echo "Available targets:"
-	@echo "  compile        - Compile the design and testbench"
-	@echo "  run           - Run simulation"
-	@echo "  all           - Compile and run"
-	@echo "  clean         - Clean generated files"
-	@echo "  help          - Show this help"
-	@echo "  run-xrun-filelist - Run xrun with compile_list.f and UVM home"
-	@echo "  wave-simvision   - Launch SimVision for waveform viewing"
-	@echo ""
-	@echo "Variables:"
-	@echo "  SIMULATOR     - Simulation tool (questa, vcs, modelsim, xrun)"
-	@echo "  TEST          - Test to run (async_fifo_basic_test, async_fifo_stress_test, async_fifo_reset_test)"
-	@echo "  UVM_HOME      - Path to UVM library (for Questa/VCS/ModelSim)"
-	@echo "  UVMHOME       - UVM home for xrun (default: CDNS-1.1d)"
-	@echo ""
-	@echo "Examples:"
-	@echo "  make SIMULATOR=xrun TEST=async_fifo_basic_test"
-	@echo "  make run-xrun-filelist TEST=async_fifo_basic_test UVMHOME=CDNS-1.1d"
-	@echo "  make wave-simvision"
-	@echo "  make clean"
-
-# Test targets
-test-basic:
-	$(MAKE) TEST=async_fifo_basic_test run
-
-test-stress:
-	$(MAKE) TEST=async_fifo_stress_test run
-
-test-reset:
-	$(MAKE) TEST=async_fifo_reset_test run
-
-# Coverage (Cadence)
-coverage-xrun:
-	xrun -coverage all $(XRUN_FLAGS) $(DESIGN_FILES) $(TB_FILES)
-
-# Waveform (Cadence)
-wave-xrun:
-	xrun -gui $(XRUN_FLAGS) $(DESIGN_FILES) $(TB_FILES)
-
-.PHONY: all compile run clean help test-basic test-stress test-reset coverage-xrun wave-xrun run-xrun-filelist wave-simvision 
+.PHONY: run all waveform clean help 
