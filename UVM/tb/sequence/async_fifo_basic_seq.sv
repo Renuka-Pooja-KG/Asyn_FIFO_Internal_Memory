@@ -2,7 +2,7 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_basic_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends async_fifo_base_seq #(DATA_WIDTH, ADDRESS_WIDTH);
+class async_fifo_basic_seq extends async_fifo_base_seq;
   `uvm_object_utils(async_fifo_basic_seq)
 
   function new(string name = "async_fifo_basic_seq");
@@ -19,7 +19,7 @@ class async_fifo_basic_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
         req.afull_value == 'unsigned'(25);
         req.aempty_value == 'unsigned'(5);
         req.sw_rst == 0;
@@ -48,7 +48,7 @@ class async_fifo_basic_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 1;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
         req.afull_value == 'unsigned'(25);
         req.aempty_value == 'unsigned'(5);
         req.sw_rst == 0;
@@ -63,7 +63,7 @@ class async_fifo_basic_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
         req.afull_value == 'unsigned'(15);
         req.aempty_value == 'unsigned'(5);
         req.sw_rst == 0;
@@ -90,7 +90,7 @@ class async_fifo_basic_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 1;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
         req.afull_value == 'unsigned'(20);
         req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
