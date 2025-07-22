@@ -2,6 +2,7 @@
 
 import uvm_pkg::*;
 import async_fifo_pkg::*;
+`include "uvm_macros.svh"
 
 module async_fifo_tb;
   

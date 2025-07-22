@@ -2,10 +2,10 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_driver #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends uvm_driver #(async_fifo_transaction);
+class async_fifo_driver extends uvm_driver #(async_fifo_transaction);
   `uvm_component_utils(async_fifo_driver)
 
-  virtual async_fifo_if #(DATA_WIDTH, ADDRESS_WIDTH).write_mp vif;
+  virtual async_fifo_if.write_mp vif;
   async_fifo_config cfg;
 
   function new(string name = "async_fifo_driver", uvm_component parent = null);
@@ -15,7 +15,7 @@ class async_fifo_driver #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     
-    if (!uvm_config_db#(virtual async_fifo_if #(DATA_WIDTH, ADDRESS_WIDTH).write_mp)::get(this, "", "vif", vif))
+    if (!uvm_config_db#(virtual async_fifo_if.write_mp)::get(this, "", "vif", vif))
       `uvm_fatal("NOVIF", "Virtual interface not found")
       
     if (!uvm_config_db#(async_fifo_config)::get(this, "", "cfg", cfg))

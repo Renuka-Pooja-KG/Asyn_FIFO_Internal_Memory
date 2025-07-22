@@ -2,10 +2,10 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_monitor #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends uvm_monitor;
+class async_fifo_monitor extends uvm_monitor;
   `uvm_component_utils(async_fifo_monitor)
 
-  virtual async_fifo_if #(DATA_WIDTH, ADDRESS_WIDTH).monitor_mp vif;
+  virtual async_fifo_if.monitor_mp vif;
   async_fifo_config cfg;
   uvm_analysis_port #(async_fifo_transaction) ap;
   
@@ -23,7 +23,7 @@ class async_fifo_monitor #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     
-    if (!uvm_config_db#(virtual async_fifo_if #(DATA_WIDTH, ADDRESS_WIDTH).monitor_mp)::get(this, "", "vif", vif))
+    if (!uvm_config_db#(virtual async_fifo_if.monitor_mp)::get(this, "", "vif", vif))
       `uvm_fatal("NOVIF", "Virtual interface not found")
       
     if (!uvm_config_db#(async_fifo_config)::get(this, "", "cfg", cfg))

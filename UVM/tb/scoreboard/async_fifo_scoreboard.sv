@@ -2,9 +2,10 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends uvm_scoreboard;
+class async_fifo_scoreboard extends uvm_scoreboard;
   `uvm_component_utils(async_fifo_scoreboard)
 
+  async_fifo_config cfg;
   uvm_analysis_export #(async_fifo_transaction) write_export;
   uvm_analysis_export #(async_fifo_transaction) read_export;
   
@@ -12,14 +13,14 @@ class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH
   uvm_tlm_analysis_fifo #(async_fifo_transaction) read_fifo;
   
   // Data integrity checking
-  logic [DATA_WIDTH-1:0] expected_data_queue[$];
+  logic [31:0] expected_data_queue[$];
   int write_count = 0;
   int read_count = 0;
   int error_count = 0;
   
   // FIFO state tracking
-  logic [ADDRESS_WIDTH:0] expected_wr_level = 0;
-  logic [ADDRESS_WIDTH:0] expected_rd_level = (1 << ADDRESS_WIDTH); // FIFO depth
+  int expected_wr_level = 0;
+  int expected_rd_level = 0;
   logic expected_wfull = 0;
   logic expected_rdempty = 1;
 
@@ -33,6 +34,10 @@ class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH
 
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
+    if (!uvm_config_db#(async_fifo_config)::get(this, "", "cfg", cfg))
+      `uvm_fatal("NOCFG", "Configuration not found")
+    expected_wr_level = 0;
+    expected_rd_level = (1 << cfg.ADDRESS_WIDTH); // FIFO depth
   endfunction
 
   function void connect_phase(uvm_phase phase);
@@ -54,7 +59,6 @@ class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH
     
     forever begin
       write_fifo.get(tr);
-      
       // Simultaneous write and read: do not update levels or queue
       if (tr.write_enable && tr.read_enable && !tr.wfull && !tr.rdempty) begin
         `uvm_info(get_type_name(), "Simultaneous write and read: levels unchanged", UVM_MEDIUM)
@@ -66,11 +70,11 @@ class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH
           expected_data_queue.push_back(tr.wdata);
           write_count++;
           // Update expected FIFO state
-          if (expected_wr_level < (1 << ADDRESS_WIDTH)) begin
+          if (expected_wr_level < (1 << cfg.ADDRESS_WIDTH)) begin
             expected_wr_level++;
             expected_rd_level--;
           end
-          expected_wfull = (expected_wr_level == (1 << ADDRESS_WIDTH));
+          expected_wfull = (expected_wr_level == (1 << cfg.ADDRESS_WIDTH));
           expected_rdempty = (expected_wr_level == 0);
           `uvm_info(get_type_name(), $sformatf("Write: data=0x%h, wr_level=%d, wfull=%b", 
                     tr.wdata, expected_wr_level, expected_wfull), UVM_HIGH)
@@ -92,7 +96,7 @@ class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH
 
   task check_read_transactions();
     async_fifo_transaction tr;
-    logic [DATA_WIDTH-1:0] expected_data;
+    logic [31:0] expected_data;
     
     forever begin
       read_fifo.get(tr);
@@ -119,7 +123,7 @@ class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH
               expected_wr_level--;
               expected_rd_level++;
             end
-            expected_wfull = (expected_wr_level == (1 << ADDRESS_WIDTH));
+            expected_wfull = (expected_wr_level == (1 << cfg.ADDRESS_WIDTH));
             expected_rdempty = (expected_wr_level == 0);
           end else begin
             `uvm_error(get_type_name(), "Read attempted but no data available")
@@ -151,7 +155,7 @@ class async_fifo_scoreboard #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH
         error_count++;
       end
       // Check level consistency
-      if (expected_wr_level + expected_rd_level != (1 << ADDRESS_WIDTH)) begin
+      if (expected_wr_level + expected_rd_level != (1 << cfg.ADDRESS_WIDTH)) begin
         `uvm_error(get_type_name(), $sformatf("FIFO level inconsistency: wr_level=%d, rd_level=%d", 
                   expected_wr_level, expected_rd_level))
         error_count++;

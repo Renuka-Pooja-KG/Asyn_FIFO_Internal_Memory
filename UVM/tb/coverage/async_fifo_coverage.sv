@@ -2,24 +2,26 @@
 
 import async_fifo_pkg::*;
 
-class async_fifo_coverage #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends uvm_subscriber #(async_fifo_transaction);
+class async_fifo_coverage extends uvm_subscriber #(async_fifo_transaction);
   `uvm_component_utils(async_fifo_coverage)
+
+  async_fifo_config cfg;
 
   // Coverage groups
   covergroup fifo_cg with function sample(
-    logic [DATA_WIDTH-1:0] wdata,
+    logic [31:0] wdata,
     logic write_enable,
     logic read_enable,
-    logic [ADDRESS_WIDTH-1:0] afull_value,
-    logic [ADDRESS_WIDTH-1:0] aempty_value,
+    logic [31:0] afull_value,
+    logic [31:0] aempty_value,
     logic wfull,
     logic rdempty,
     logic wr_almost_ful,
     logic rd_almost_empty,
     logic overflow,
     logic underflow,
-    logic [ADDRESS_WIDTH:0] wr_level,
-    logic [ADDRESS_WIDTH:0] rd_level,
+    int wr_level,
+    int rd_level,
     logic sw_rst,
     logic hw_rst_n,
     logic mem_rst
@@ -72,14 +74,14 @@ class async_fifo_coverage #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH =
       bins low = {[1:10]};
       bins medium = {[11:20]};
       bins high = {[21:30]};
-      bins full = {(1 << ADDRESS_WIDTH)};
+      bins full = {32};
     }
     rd_level_cp: coverpoint rd_level {
       bins empty = {0};
       bins low = {[1:10]};
       bins medium = {[11:20]};
       bins high = {[21:30]};
-      bins full = {(1 << ADDRESS_WIDTH)};
+      bins full = {32};
     }
     // Reset coverage
     reset_cp: coverpoint {sw_rst, hw_rst_n, mem_rst} {
@@ -108,8 +110,8 @@ class async_fifo_coverage #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH =
 
   // Additional coverage for CDC scenarios
   covergroup cdc_cg with function sample(
-    logic [ADDRESS_WIDTH:0] wr_level,
-    logic [ADDRESS_WIDTH:0] rd_level,
+    int wr_level,
+    int rd_level,
     logic wfull,
     logic rdempty
   );
@@ -129,6 +131,12 @@ class async_fifo_coverage #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH =
     super.new(name, parent);
     fifo_cg = new();
     cdc_cg = new();
+  endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db#(async_fifo_config)::get(this, "", "cfg", cfg))
+      `uvm_fatal("NOCFG", "Configuration not found")
   endfunction
 
   function void write(async_fifo_transaction t);
