@@ -1,7 +1,5 @@
 `timescale 1ns/1ps
 
-`include "async_fifo_config.sv"
-`include "async_fifo_transaction.sv"
 `include "async_fifo_base_seq.sv" // <-- This is required!
 
 class async_fifo_reset_seq extends async_fifo_base_seq;

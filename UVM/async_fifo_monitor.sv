@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
 
-`include "async_fifo_config.sv"
-`include "async_fifo_transaction.sv"  
-`include "async_fifo_if.sv"
+// `include "async_fifo_config.sv"
+// `include "async_fifo_transaction.sv"  
+// `include "async_fifo_if.sv"
 
 class async_fifo_monitor extends uvm_monitor;
   `uvm_component_utils(async_fifo_monitor)

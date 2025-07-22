@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
-`include "async_fifo_config.sv"
-`include "async_fifo_transaction.sv"
+// `include "async_fifo_config.sv"
+// `include "async_fifo_transaction.sv"
 `include "async_fifo_driver.sv"
 `include "async_fifo_monitor.sv"
 `include "async_fifo_sequencer.sv"
