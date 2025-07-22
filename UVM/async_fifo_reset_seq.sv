@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 
-import async_fifo_pkg::*;
+`include "async_fifo_config.sv"
+`include "async_fifo_transaction.sv"
 
 class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends async_fifo_base_seq #(DATA_WIDTH, ADDRESS_WIDTH);
   `uvm_object_utils(async_fifo_reset_seq)

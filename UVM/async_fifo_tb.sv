@@ -1,8 +1,9 @@
 `timescale 1ns/1ps
 
 import uvm_pkg::*;
-import async_fifo_pkg::*;
 `include "uvm_macros.svh"
+`include "async_fifo_config.sv"
+`include "async_fifo_transaction.sv"
 
 module async_fifo_tb;
   

@@ -1,7 +1,7 @@
 # Makefile for Asynchronous FIFO UVM Verification (xrun + simvision only)
 
 RTL_DIR = ../RTL
-UVM_DIR = ./tb
+UVM_DIR = .
 
 DESIGN_FILES = $(RTL_DIR)/async_fifo.sv \
                $(RTL_DIR)/fifo_mem.sv \
@@ -10,23 +10,24 @@ DESIGN_FILES = $(RTL_DIR)/async_fifo.sv \
                $(RTL_DIR)/rd_ndff_synch.sv \
                $(RTL_DIR)/wr_ndff_synch.sv
 
-TB_FILES = $(UVM_DIR)/async_fifo_pkg.sv \
-           $(UVM_DIR)/interface/async_fifo_if.sv \
-           $(UVM_DIR)/agent/async_fifo_driver.sv \
-           $(UVM_DIR)/agent/async_fifo_monitor.sv \
-           $(UVM_DIR)/agent/async_fifo_sequencer.sv \
-           $(UVM_DIR)/agent/async_fifo_agent.sv \
-           $(UVM_DIR)/sequence/async_fifo_base_seq.sv \
-           $(UVM_DIR)/sequence/async_fifo_basic_seq.sv \
-           $(UVM_DIR)/sequence/async_fifo_stress_seq.sv \
-           $(UVM_DIR)/sequence/async_fifo_reset_seq.sv \
-           $(UVM_DIR)/coverage/async_fifo_coverage.sv \
-           $(UVM_DIR)/scoreboard/async_fifo_scoreboard.sv \
+TB_FILES = $(UVM_DIR)/async_fifo_config.sv \
+           $(UVM_DIR)/async_fifo_transaction.sv \
+           $(UVM_DIR)/async_fifo_if.sv \
+           $(UVM_DIR)/async_fifo_driver.sv \
+           $(UVM_DIR)/async_fifo_monitor.sv \
+           $(UVM_DIR)/async_fifo_sequencer.sv \
+           $(UVM_DIR)/async_fifo_agent.sv \
+           $(UVM_DIR)/async_fifo_base_seq.sv \
+           $(UVM_DIR)/async_fifo_basic_seq.sv \
+           $(UVM_DIR)/async_fifo_stress_seq.sv \
+           $(UVM_DIR)/async_fifo_reset_seq.sv \
+           $(UVM_DIR)/async_fifo_coverage.sv \
+           $(UVM_DIR)/async_fifo_scoreboard.sv \
            $(UVM_DIR)/async_fifo_env.sv \
-           $(UVM_DIR)/test/async_fifo_base_test.sv \
-           $(UVM_DIR)/test/async_fifo_basic_test.sv \
-           $(UVM_DIR)/test/async_fifo_stress_test.sv \
-           $(UVM_DIR)/test/async_fifo_reset_test.sv \
+           $(UVM_DIR)/async_fifo_base_test.sv \
+           $(UVM_DIR)/async_fifo_basic_test.sv \
+           $(UVM_DIR)/async_fifo_stress_test.sv \
+           $(UVM_DIR)/async_fifo_reset_test.sv \
            $(UVM_DIR)/async_fifo_tb.sv
 
 UVMHOME ?= CDNS-1.1d
@@ -43,12 +44,6 @@ help:
 	@echo "//-----------------------------------------------------------------------------------//"
 
 INCDIRS = +incdir+$(UVM_DIR) \
-          +incdir+$(UVM_DIR)/interface \
-          +incdir+$(UVM_DIR)/agent \
-          +incdir+$(UVM_DIR)/sequence \
-          +incdir+$(UVM_DIR)/coverage \
-          +incdir+$(UVM_DIR)/scoreboard \
-          +incdir+$(UVM_DIR)/test \
           +incdir+$(RTL_DIR)
 
 run:

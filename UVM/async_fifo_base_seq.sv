@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 
-import async_fifo_pkg::*;
+`include "async_fifo_config.sv"
+`include "async_fifo_transaction.sv"
 
 class async_fifo_base_seq extends uvm_sequence #(async_fifo_transaction);
   `uvm_object_utils(async_fifo_base_seq)
