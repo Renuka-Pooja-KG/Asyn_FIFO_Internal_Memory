@@ -2,6 +2,7 @@
 
 `include "async_fifo_config.sv"
 `include "async_fifo_transaction.sv"
+`include "async_fifo_base_seq.sv" // <-- This is required!
 
 class async_fifo_stress_seq extends async_fifo_base_seq;
   `uvm_object_utils(async_fifo_stress_seq)

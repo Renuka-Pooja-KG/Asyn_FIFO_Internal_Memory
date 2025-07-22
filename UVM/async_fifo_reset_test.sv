@@ -2,6 +2,7 @@
 
 `include "async_fifo_config.sv"
 `include "async_fifo_transaction.sv"
+`include "async_fifo_base_test.sv" // <-- This is required!
 
 class async_fifo_reset_test extends async_fifo_base_test;
   `uvm_component_utils(async_fifo_reset_test)
