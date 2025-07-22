@@ -3,7 +3,7 @@
 `include "async_fifo_config.sv"
 `include "async_fifo_transaction.sv"
 
-class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH = 5) extends async_fifo_base_seq #(DATA_WIDTH, ADDRESS_WIDTH);
+class async_fifo_reset_seq extends async_fifo_base_seq;
   `uvm_object_utils(async_fifo_reset_seq)
 
   function new(string name = "async_fifo_reset_seq");
@@ -20,9 +20,9 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -34,8 +34,8 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 0;
         req.read_enable == 0;
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 0;
         req.mem_rst == 0;
@@ -47,9 +47,9 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -62,9 +62,9 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -76,8 +76,8 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 0;
         req.read_enable == 0;
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 1;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -89,9 +89,9 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -104,9 +104,9 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -118,8 +118,8 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 0;
         req.read_enable == 0;
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 1;
@@ -131,9 +131,9 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -146,9 +146,9 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 1;
         req.read_enable == 0;
-        req.wdata inside {[{DATA_WIDTH{1'b0}}+1:{DATA_WIDTH{1'b1}}]};
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.wdata inside {[{cfg.DATA_WIDTH{1'b0}}+1:{cfg.DATA_WIDTH{1'b1}}]};
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 0;
         req.hw_rst_n == 1;
         req.mem_rst == 0;
@@ -160,8 +160,8 @@ class async_fifo_reset_seq #(parameter DATA_WIDTH = 32, parameter ADDRESS_WIDTH 
       `uvm_do_with(req, {
         req.write_enable == 0;
         req.read_enable == 0;
-        req.afull_value == 5'd20;
-        req.aempty_value == 5'd10;
+        req.afull_value == 'unsigned'(20);
+        req.aempty_value == 'unsigned'(10);
         req.sw_rst == 1;
         req.hw_rst_n == 0;
         req.mem_rst == 1;
